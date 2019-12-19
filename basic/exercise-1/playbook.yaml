@@ -1,0 +1,11 @@
+-
+  name: Test connectivity to targets
+  hosts: all
+  tasks:
+    - name: Copy file
+      copy:
+      src: foo.conf
+      dest: /home/osboxes/foo.conf
+      owner: osboxes
+      group: osboxes
+      mode: '0644'
