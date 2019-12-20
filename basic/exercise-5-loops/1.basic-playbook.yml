@@ -1,0 +1,14 @@
+-
+  name: 'Loop example'
+  hosts: localhost
+  tasks:
+      - user: name '{{ item.name }}' state=present uid='{{ item.uid }}'
+        loop:
+          - name: joe
+            uid: 1010
+          - name: doe
+            uid: 1020
+          - name: foo
+            uid: 1030
+          - name: bar
+            uid: 1040
