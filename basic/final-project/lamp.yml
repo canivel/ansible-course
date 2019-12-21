@@ -1,0 +1,60 @@
+---
+-
+  name: LAMP install and site clone
+  hosts: localhost
+  packages:
+    - httpd
+    - firewalld
+    - mariadb-server
+    - git
+    - php
+    - php-mysql
+  tasks:
+    # loop packages and install
+    - name: Install all packages
+      yum: 'name={{ item }} state=present'
+      enabled: True
+      with_items: '{{ packages }}'
+    # configure firewall
+    - name: Configure firewall 3306
+      firewalld: 
+        permanent: True
+        zone: public
+        port: 3306/tcp
+        immediate: True
+    - name: Configure firewall 80
+      firewalld: 
+        permanent: True
+        zone: public
+        port: 80/tcp
+        immediate: True
+    # create database
+    - name: Create Database
+      mysql_db:
+        name: ecomdb
+        state: present
+    # Removes all anonymous user accounts
+    - mysql_user:
+        name: ''
+        host_all: yes
+        state: absent
+    # Create database user with name 'bob' and password '12345' with all database privileges
+    - mysql_user:
+        name: ecomuser
+        password: 12345
+        priv: '*.*:ALL'
+        state: present
+    # Copy database dump file to remote host and restore it to database 'my_db'
+    - name: Copy database dump file
+      copy:
+        src: ./learning-app-ecommerce/assets/db-load-script.sql
+        dest: /tmp
+    - name: Restore database
+      mysql_db:
+        name: ecomdb
+        state: import
+        target: /tmp/db-load-script.sql
+    # add index.php yo apache and restart
+    
+
+
